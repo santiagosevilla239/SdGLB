@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import ts from 'typescript';
+import fs from 'node:fs';
+const source=fs.readFileSync('lib/domain.ts','utf8');
+const js=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const {apply,emptyState,shortage}=await import('data:text/javascript;base64,'+Buffer.from(js).toString('base64'));
+const s=emptyState();apply(s,{type:'product',name:'Chocolate',minimum:20});const p=s.products[0];
+apply(s,{type:'stockAdjust',productId:p.id,location:'Fábrica',buckets:10,kg:60,reason:'Conteo inicial'});assert.equal(shortage(p),10);
+apply(s,{type:'accept',productId:p.id});apply(s,{type:'stockAdjust',productId:p.id,location:'Fábrica',buckets:3,kg:18,reason:'Conteo corregido'});assert.equal(shortage(p),7);assert.equal(s.movements.filter(m=>m.kind==='Producción').length,0);
+apply(s,{type:'order',branch:'Henderson',lines:[{productId:p.id,requested:2}]});const o=s.orders[0];apply(s,{type:'bucket',direction:'out',productId:p.id,kg:6,orderId:o.id});assert.equal(shortage(p),8);assert.equal(o.lines[0].sent,1);
+apply(s,{type:'dispatch',orderId:o.id});apply(s,{type:'receive',orderId:o.id});assert.equal(p.stocks.Henderson.buckets,1);assert.throws(()=>apply(s,{type:'receive',orderId:o.id}));
+apply(s,{type:'ingredient',name:'Azúcar',unit:'kg'});const i=s.ingredients[0];apply(s,{type:'ingredientMove',ingredientId:i.id,quantity:10,reason:'Conteo inicial'});apply(s,{type:'recipe',productId:p.id,name:'Chocolate base',lines:[{ingredientId:i.id,quantity:3}]});apply(s,{type:'start',recipeId:s.recipes[0].id,batches:2,commandId:'test'});assert.equal(i.stock,4);assert.throws(()=>apply(s,{type:'start',recipeId:s.recipes[0].id,batches:2}));assert.equal(i.stock,4);
+apply(s,{type:'purchase',ingredientId:i.id,quantity:10,supplier:'Proveedor'});apply(s,{type:'purchaseReceive',purchaseId:s.purchases[0].id,quantity:4});assert.equal(i.stock,8);assert.equal(s.purchases[0].received,4);
+const t=emptyState();apply(t,{type:'product',name:'Americana',minimum:2});apply(t,{type:'order',branch:'Bolívar',lines:[{productId:t.products[0].id,requested:1}]});apply(t,{type:'bucket',direction:'out',productId:t.products[0].id,kg:5,orderId:t.orders[0].id});assert.equal(t.products[0].stocks['Fábrica'].buckets,0);assert.equal(t.products[0].stocks['Fábrica'].kg,0);assert.equal(t.movements[0].kind,'Ajuste automático');assert.equal(t.movements.filter(m=>m.kind==='Producción').length,0);
+console.log('8 circuitos verificados: faltante dinámico, ajustes, egreso, recepción, receta, insuficiencia, compra parcial y ajuste automático.');
