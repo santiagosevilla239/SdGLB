@@ -1,0 +1,16 @@
+.panel { padding: clamp(1rem, 3vw, 2rem); color: var(--text-primary); }
+.panel h1 { font-size: 1.75rem; font-weight: 700; }
+.panel h2 { font-size: 1.15rem; font-weight: 650; }
+.panel nav, .panel form { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; margin-block: 1rem; }
+.panel section { border: 1px solid var(--border-subtle); border-radius: .75rem; background: var(--bg-canvas); padding: 1rem; margin-bottom: 1rem; }
+.panel label { display: grid; gap: .25rem; }
+.panel button, .panel input, .panel select { border: 1px solid var(--border-subtle); border-radius: .4rem; padding: .5rem .7rem; background: var(--bg-canvas); }
+.panel button[aria-pressed="true"], .panel button[type="submit"] { background: var(--brand); color: white; }
+.panel button:disabled { opacity: .6; }
+.panel [role="alert"] { color: #b42318; }
+.panel [role="status"] { color: #14683c; }
+.panel :global(.tableWrap) { overflow-x: auto; }
+.panel th, .panel td { text-align: left; padding: .5rem; border-bottom: 1px solid var(--border-subtle); }
+.panel :global(.columns) { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); }
+.panel :global(.listRow), .panel :global(.sectionHead) { display: flex; gap: .75rem; justify-content: space-between; flex-wrap: wrap; padding-block: .4rem; }
+.panel :global(.order) { padding-block: .65rem; border-bottom: 1px solid var(--border-subtle); }
