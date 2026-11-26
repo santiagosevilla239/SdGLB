@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mi inventario · Suc. Caballito · Los Bambinos</title>
+  <link rel="icon" href="data:,">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <style>    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .inventario-section {
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .col-estado {
+      width: 120px;
+    }
+
+    .col-accion {
+      width: 96px;
+      text-align: right;
+    }
+
+    .inventario-section tbody tr {
+      cursor: pointer;
+    }
+
+    .cell-link {
+      background: none;
+      border: 0;
+      padding: 0;
+      font: inherit;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .inventario-section tbody tr:hover .cell-link {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .confirm-body {
+      font-size: var(--text-base);
+      color: var(--text-primary);
+      line-height: var(--leading-relaxed);
+    }
+
+    .recepcion-hint {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin: var(--space-2) 0 var(--space-4);
+    }
+
+    .cell-link:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    @media (max-width: 600px) {
+      .page-main {
+        padding: var(--space-5) var(--space-4);
+      }
+
+      .page-header {
+        flex-direction: column;
+      }
+
+      .page-header .btn {
+        width: 100%;
+      }
+    }
+</style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">Ir al contenido principal</a>
+
+  <div class="app-shell">
+
+    <header class="topbar">
+      <div class="topbar-brand">
+        <img
+          src="assets/logo.svg"
+          alt="Los Bambinos"
+          class="topbar-logo"
+        >
+        <div class="topbar-divider" aria-hidden="true"></div>
+        <span class="topbar-scope">Suc. Caballito</span>
+      </div>
+
+      <div class="topbar-user">
+        <span class="topbar-username">lucía.r</span>
+        <div class="topbar-avatar" aria-hidden="true">L</div>
+      </div>
+    </header>
+
+    <nav class="sidebar" aria-label="Navegación principal">
+
+      <ul class="reset-list sidebar-nav">
+        <li>
+          <a href="04-suc-dashboard.html" class="sidebar-link">
+            <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+            <span>Inicio</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="05-suc-inventario.html"
+            class="sidebar-link sidebar-link--active"
+            aria-current="page"
+          >
+            <i class="ti ti-package" aria-hidden="true"></i>
+            <span>Mi inventario</span>
+          </a>
+        </li>
+        <li>
+          <a href="06-suc-catalogo.html" class="sidebar-link">
+            <i class="ti ti-shopping-cart" aria-hidden="true"></i>
+            <span>Pedir a fábrica</span>
+          </a>
+        </li>
+        <li>
+          <a href="07-suc-pedidos.html" class="sidebar-link">
+            <i class="ti ti-clipboard-list" aria-hidden="true"></i>
+            <span>Mis pedidos</span>
+          </a>
+        </li>
+        <li>
+          <a href="09-suc-ajustes.html" class="sidebar-link">
+            <i class="ti ti-settings" aria-hidden="true"></i>
+            <span>Ajustes</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <a href="00-login.html" class="sidebar-link">
+          <i class="ti ti-logout" aria-hidden="true"></i>
+          <span>Salir</span>
+        </a>
+      </div>
+
+    </nav>
+
+    <main class="page-main" id="main-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Mi inventario</h1>
+          <p class="page-subtitle" id="inventario-subtitulo"></p>
+        </div>
+        <a
+          href="06-suc-catalogo.html"
+          class="btn btn--primary btn--lg"
+        >
+          <i class="ti ti-shopping-cart" aria-hidden="true"></i>
+          Pedir a fábrica
+        </a>
+      </div>
+
+      <section class="inventario-section" aria-labelledby="titulo-inventario">
+
+        <div class="section-header">
+          <h2 class="section-title" id="titulo-inventario">Stock en mi sucursal</h2>
+        </div>
+
+        <div class="tabs" id="tabs-inventario" role="tablist" aria-label="Qué stock estás mirando">
+          <button
+            type="button"
+            class="tab tab--activa"
+            role="tab"
+            id="tab-sabores"
+            data-tab="sabores"
+            aria-selected="true"
+            aria-controls="panel-sabores"
+          >
+            <i class="ti ti-ice-cream" aria-hidden="true"></i>
+            Sabores
+          </button>
+          <button
+            type="button"
+            class="tab"
+            role="tab"
+            id="tab-insumos"
+            data-tab="insumos"
+            aria-selected="false"
+            aria-controls="panel-insumos"
+          >
+            <i class="ti ti-box" aria-hidden="true"></i>
+            Insumos
+          </button>
+        </div>
+
+        <div id="panel-sabores" role="tabpanel" aria-labelledby="tab-sabores">
+          <table class="data-table" aria-label="Stock de sabores en mi sucursal">
+            <thead>
+              <tr>
+                <th scope="col">Sabor</th>
+                <th scope="col">En góndola</th>
+                <th scope="col">Peso disponible</th>
+                <th scope="col" class="col-estado">Estado</th>
+                <th scope="col" class="col-accion">
+                  <span class="sr-only">Acción</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="inventario-body"></tbody>
+          </table>
+
+          <div class="cards-list" id="inventario-cards"></div>
+        </div>
+
+        <div id="panel-insumos" role="tabpanel" aria-labelledby="tab-insumos" hidden>
+          <table class="data-table" aria-label="Stock de insumos en mi sucursal">
+            <thead>
+              <tr>
+                <th scope="col">Insumo</th>
+                <th scope="col">Categoría</th>
+                <th scope="col">Me quedan</th>
+                <th scope="col" class="col-estado">Estado</th>
+                <th scope="col" class="col-accion">
+                  <span class="sr-only">Acción</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="insumos-body"></tbody>
+          </table>
+
+          <div class="cards-list" id="insumos-cards"></div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <dialog class="modal modal--wide" id="modal-detalle" aria-labelledby="detalle-titulo">
+    <div class="modal-inner">
+
+      <header class="modal-header">
+        <div class="modal-title-group">
+          <h2 class="modal-title" id="detalle-titulo">Sabor</h2>
+          <span class="pill" id="detalle-estado"></span>
+        </div>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          id="detalle-cerrar"
+          aria-label="Cerrar"
+          style="height:36px; width:36px; padding:0;"
+        >
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="modal-body modal-body--scroll" id="detalle-body">
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn btn--ghost" id="detalle-cerrar-pie">
+          Cerrar
+        </button>
+        <a href="06-suc-catalogo.html" class="btn btn--primary btn--lg" id="detalle-pedir">
+          <i class="ti ti-shopping-cart" aria-hidden="true"></i>
+          Pedir más de este sabor
+        </a>
+      </footer>
+
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="modal-descontar" aria-labelledby="descontar-titulo">
+    <div class="modal-inner">
+
+      <header class="modal-header">
+        <h2 class="modal-title" id="descontar-titulo">Descontar de mi stock</h2>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          id="descontar-cerrar"
+          aria-label="Cerrar"
+          style="height:36px; width:36px; padding:0;"
+        >
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <p class="confirm-body" id="descontar-texto"></p>
+        <p class="recepcion-hint" id="descontar-quedan"></p>
+
+        <div
+          class="alert alert--error"
+          id="descontar-error"
+          role="alert"
+          aria-live="assertive"
+          hidden
+        >
+          <i class="ti ti-alert-circle" aria-hidden="true"></i>
+          <span id="descontar-error-text"></span>
+        </div>
+
+        <form id="form-descontar" novalidate>
+          <div class="field-group">
+            <label class="field-label" for="inp-descontar">¿Cuántos usaste?</label>
+            <input
+              class="field-input"
+              type="number"
+              id="inp-descontar"
+              min="1"
+              step="1"
+              placeholder="Ej: 50"
+            >
+            <p class="field-help">Se descuenta de lo que tenés en la sucursal.</p>
+          </div>
+        </form>
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn btn--ghost" id="descontar-cancelar">
+          Cancelar
+        </button>
+        <button type="submit" form="form-descontar" class="btn btn--primary btn--lg">
+          <i class="ti ti-check" aria-hidden="true"></i>
+          Descontar
+        </button>
+      </footer>
+
+    </div>
+  </dialog>
+
+  <div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    hidden
+  >
+    <i class="ti ti-check" aria-hidden="true"></i>
+    <span class="toast-text" id="toast-text">Listo.</span>
+    <button type="button" class="toast-undo" id="toast-undo" hidden>Deshacer</button>
+    <button type="button" class="toast-close" id="toast-close" aria-label="Cerrar aviso">
+      <i class="ti ti-x"></i>
+    </button>
+  </div>
+
+  <script src="js/dialogo.js">
+</script>
+  <script src="js/datos.js">
+</script>
+  <script src="js/tarjetas.js">
+</script>
+  <script src="js/pestanas.js">
+</script>
+  <script src="js/suc-inventario.js">
+</script>
+  <script src="js/insumos-sucursal.js">
+</script>
+  <script src="js/nav-movil.js">
+</script>
+</body>
+</html>

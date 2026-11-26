@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Dashboard · Los Bambinos</title>
+  <link rel="icon" href="data:,">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <style>    .dash-grid {
+      display: grid;
+      grid-template-columns: 2fr 3fr;
+      gap: var(--space-5);
+    }
+
+    @media (max-width: 900px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dash-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-main {
+        padding: var(--space-5) var(--space-4);
+      }
+    }
+</style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">Ir al contenido principal</a>
+
+  <div class="app-shell">
+
+    <header class="topbar">
+      <div class="topbar-brand">
+        <img
+          src="assets/logo.svg"
+          alt="Los Bambinos"
+          class="topbar-logo"
+        >
+        <div class="topbar-divider" aria-hidden="true"></div>
+        <span class="topbar-scope">Fábrica Central</span>
+      </div>
+
+      <div class="topbar-user">
+        <span class="topbar-username">nicolás.p</span>
+        <div class="topbar-avatar" aria-hidden="true">N</div>
+      </div>
+    </header>
+
+    <nav class="sidebar" aria-label="Navegación principal">
+
+      <ul class="reset-list sidebar-nav">
+        <li>
+          <a
+            href="01-dashboard.html"
+            class="sidebar-link sidebar-link--active"
+            aria-current="page"
+          >
+            <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="02-inventario.html" class="sidebar-link">
+            <i class="ti ti-package" aria-hidden="true"></i>
+            <span>Inventario</span>
+          </a>
+        </li>
+        <li>
+          <a href="03-pedidos.html" class="sidebar-link">
+            <i class="ti ti-clipboard-list" aria-hidden="true"></i>
+            <span>Pedidos</span>
+          </a>
+        </li>
+        <li>
+          <a href="08-ajustes.html" class="sidebar-link">
+            <i class="ti ti-settings" aria-hidden="true"></i>
+            <span>Ajustes</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <a href="00-login.html" class="sidebar-link">
+          <i class="ti ti-logout" aria-hidden="true"></i>
+          <span>Salir</span>
+        </a>
+      </div>
+
+    </nav>
+
+    <main class="page-main" id="main-content">
+
+      <div class="page-header">
+        <h1 class="page-title">Buen día, Nicolás</h1>
+        <p class="page-subtitle" id="dash-subtitulo">Lunes 12 de mayo de 2026 · Turno mañana</p>
+      </div>
+
+      <div class="kpi-grid" role="list" aria-label="Resumen del día">
+
+        <div class="kpi-card" role="listitem">
+          <span class="kpi-label">Pedidos por confirmar</span>
+          <span class="kpi-value" id="kpi-pendientes">—</span>
+          <a href="03-pedidos.html" class="kpi-link">
+            Ver pedidos
+            <i class="ti ti-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+
+        <div class="kpi-card" role="listitem">
+          <span class="kpi-label">Latas cargadas hoy</span>
+          <span class="kpi-value" id="kpi-cargadas">—</span>
+          <a href="02-inventario.html" class="kpi-link">
+            Ver inventario
+            <i class="ti ti-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+
+        <div class="kpi-card" role="listitem">
+          <span class="kpi-label">Despachos del día</span>
+          <span class="kpi-value" id="kpi-despachos">—</span>
+          <a href="03-pedidos.html" class="kpi-link">
+            Ver despachos
+            <i class="ti ti-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+
+        <div class="kpi-card kpi-card--alert" role="listitem">
+          <span class="kpi-label">Con stock limitado o sin stock</span>
+          <span class="kpi-value" id="kpi-alertas">—</span>
+          <a href="02-inventario.html" class="kpi-link">
+            Ver inventario
+            <i class="ti ti-arrow-right" aria-hidden="true"></i>
+          </a>
+        </div>
+
+      </div>
+
+      <div class="dash-grid">
+
+        <section class="dash-section" aria-labelledby="titulo-alertas">
+          <div class="section-header">
+            <h2 class="section-title" id="titulo-alertas">
+              Alertas de stock
+            </h2>
+            <a href="02-inventario.html" class="section-link">
+              Ver inventario completo
+            </a>
+          </div>
+
+          <table class="data-table" aria-label="Productos con stock crítico">
+            <thead>
+              <tr>
+                <th scope="col">Producto</th>
+                <th scope="col">Latas</th>
+                <th scope="col">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-alertas"></tbody>
+          </table>
+
+        <div class="cards-list" id="alertas-cards"></div>
+        </section>
+
+        <section class="dash-section" aria-labelledby="titulo-pedidos">
+          <div class="section-header">
+            <h2 class="section-title" id="titulo-pedidos">
+              Últimos pedidos recibidos
+            </h2>
+            <a href="03-pedidos.html" class="section-link">
+              Ver todos
+            </a>
+          </div>
+
+          <table class="data-table" aria-label="Pedidos recientes de las sucursales">
+            <thead>
+              <tr>
+                <th scope="col">Pedido</th>
+                <th scope="col">Sucursal</th>
+                <th scope="col">Ítems</th>
+                <th scope="col">Recibido</th>
+                <th scope="col">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-pedidos"></tbody>
+          </table>
+
+        <div class="cards-list" id="pedidos-cards"></div>
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="js/dialogo.js">
+</script>
+  <script src="js/datos.js">
+</script>
+  <script src="js/tarjetas.js">
+</script>
+  <script src="js/dashboard.js">
+</script>
+  <script src="js/nav-movil.js">
+</script>
+</body>
+</html>

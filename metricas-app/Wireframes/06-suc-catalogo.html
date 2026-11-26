@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Pedir a fábrica · Suc. Caballito · Los Bambinos</title>
+  <link rel="icon" href="data:,">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <style>    .catalogo-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-5);
+      align-items: start;
+    }
+
+    .catalogo-main {
+      min-width: 0;
+    }
+
+    .catalog-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      margin-bottom: var(--space-5);
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+    }
+
+    .catalog-legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+    }
+
+    .catalog-card {
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .catalog-card[data-estado="sin-stock"] {
+      opacity: 0.7;
+    }
+
+    .catalog-card.is-en-pedido {
+      border-color: var(--success);
+      box-shadow: 0 0 0 1px var(--success);
+    }
+
+    .catalog-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+
+    .catalog-card-title {
+      font-size: var(--text-base);
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: var(--leading-tight);
+    }
+
+    .catalog-card-meta {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      margin-top: auto;
+    }
+
+    .catalog-card-action {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .cart {
+      position: sticky;
+      top: calc(56px + var(--space-6));
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .cart-header {
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .cart-body {
+      max-height: 48vh;
+      overflow-y: auto;
+    }
+
+    .cart-empty {
+      text-align: center;
+      padding: var(--space-6) var(--space-5);
+    }
+
+    .cart-empty .ti {
+      font-size: 32px;
+      color: var(--text-tertiary);
+      display: block;
+      margin-bottom: var(--space-2);
+    }
+
+    .cart-empty-text {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      line-height: var(--leading-normal);
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .cart-item:last-child {
+      border-bottom: 0;
+    }
+
+    .cart-item-info {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-1) var(--space-3);
+      min-width: 0;
+    }
+
+    .cart-item-name {
+      font-size: var(--text-sm);
+      color: var(--text-primary);
+      line-height: var(--leading-normal);
+      min-width: 0;
+    }
+
+    .cart-item-qty {
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .cart-item-remove {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      color: var(--text-tertiary);
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .cart-item-remove:hover {
+      background: var(--brand-soft-bg);
+      color: var(--brand);
+    }
+
+    .cart-precio {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-5);
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .cart-precio-label {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    .cart-precio-valor {
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cart-footer {
+      padding: var(--space-4) var(--space-5);
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+    }
+
+    .cart-total {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+    }
+
+    .cart-total-label {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    .cart-total-value {
+      font-size: var(--text-lg);
+      font-weight: 500;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cart-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: var(--z-dropdown);
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--bg-canvas);
+      border-top: 1px solid var(--border-strong);
+      box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .cart-bar-count {
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .confirm-list {
+      list-style: none;
+      margin: 0 0 var(--space-4);
+      padding: 0;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .confirm-list li {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-1) var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--text-sm);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .confirm-list li .confirm-qty {
+      white-space: nowrap;
+    }
+
+    .confirm-list li:last-child {
+      border-bottom: 0;
+    }
+
+    .confirm-list .confirm-qty {
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .confirm-total {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 1100px) {
+      .catalog-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .catalogo-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .catalog-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .cart {
+        display: none;
+      }
+
+      .page-main {
+        padding-bottom: 88px;
+      }
+
+      .cart-bar {
+        display: flex;
+      }
+
+      .page-main {
+        padding-bottom: 88px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .catalog-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-main {
+        padding: var(--space-5) var(--space-4) 88px;
+      }
+    }
+</style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">Ir al contenido principal</a>
+
+  <div class="app-shell">
+
+    <header class="topbar">
+      <div class="topbar-brand">
+        <img
+          src="assets/logo.svg"
+          alt="Los Bambinos"
+          class="topbar-logo"
+        >
+        <div class="topbar-divider" aria-hidden="true"></div>
+        <span class="topbar-scope">Suc. Caballito</span>
+      </div>
+
+      <div class="topbar-user">
+        <span class="topbar-username">lucía.r</span>
+        <div class="topbar-avatar" aria-hidden="true">L</div>
+      </div>
+    </header>
+
+    <nav class="sidebar" aria-label="Navegación principal">
+
+      <ul class="reset-list sidebar-nav">
+        <li>
+          <a href="04-suc-dashboard.html" class="sidebar-link">
+            <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+            <span>Inicio</span>
+          </a>
+        </li>
+        <li>
+          <a href="05-suc-inventario.html" class="sidebar-link">
+            <i class="ti ti-package" aria-hidden="true"></i>
+            <span>Mi inventario</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="06-suc-catalogo.html"
+            class="sidebar-link sidebar-link--active"
+            aria-current="page"
+          >
+            <i class="ti ti-shopping-cart" aria-hidden="true"></i>
+            <span>Pedir a fábrica</span>
+          </a>
+        </li>
+        <li>
+          <a href="07-suc-pedidos.html" class="sidebar-link">
+            <i class="ti ti-clipboard-list" aria-hidden="true"></i>
+            <span>Mis pedidos</span>
+          </a>
+        </li>
+        <li>
+          <a href="09-suc-ajustes.html" class="sidebar-link">
+            <i class="ti ti-settings" aria-hidden="true"></i>
+            <span>Ajustes</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <a href="00-login.html" class="sidebar-link">
+          <i class="ti ti-logout" aria-hidden="true"></i>
+          <span>Salir</span>
+        </a>
+      </div>
+
+    </nav>
+
+    <main class="page-main" id="main-content">
+
+      <div class="page-header">
+        <h1 class="page-title">Pedir a fábrica</h1>
+        <p class="page-subtitle" id="catalogo-subtitulo"></p>
+      </div>
+
+      <div class="catalogo-layout">
+
+        <div class="catalogo-main">
+
+          <div class="tabs" id="tabs-catalogo" role="tablist" aria-label="Qué querés pedir">
+            <button
+              type="button"
+              class="tab tab--activa"
+              role="tab"
+              id="tab-latas"
+              data-tab="latas"
+              aria-selected="true"
+              aria-controls="panel-latas"
+            >
+              <i class="ti ti-ice-cream" aria-hidden="true"></i>
+              Latas de helado
+            </button>
+            <button
+              type="button"
+              class="tab"
+              role="tab"
+              id="tab-insumos"
+              data-tab="insumos"
+              aria-selected="false"
+              aria-controls="panel-insumos"
+            >
+              <i class="ti ti-box" aria-hidden="true"></i>
+              Insumos
+            </button>
+          </div>
+
+          <div id="panel-latas" role="tabpanel" aria-labelledby="tab-latas">
+            <div class="catalog-legend" aria-hidden="true">
+              <span class="catalog-legend-item"><span class="pill pill--disponible">Disponible</span> hay de sobra</span>
+              <span class="catalog-legend-item"><span class="pill pill--limitado">Limitado</span> quedan pocas</span>
+              <span class="catalog-legend-item"><span class="pill pill--sin-stock">Sin stock</span> no se puede pedir</span>
+            </div>
+
+            <div class="catalog-grid" id="catalog-grid"></div>
+          </div>
+
+          <div id="panel-insumos" role="tabpanel" aria-labelledby="tab-insumos" hidden>
+            <div class="catalog-legend" aria-hidden="true">
+              <span class="catalog-legend-item">
+                Los insumos se piden por bulto cerrado. Abajo de cada uno ves
+                cuántas unidades entran.
+              </span>
+            </div>
+
+            <div class="catalog-grid" id="insumos-grid"></div>
+          </div>
+        </div>
+
+        <aside class="cart" aria-label="Tu pedido">
+          <div class="cart-header">
+            <h2 class="section-title">Tu pedido</h2>
+          </div>
+
+          <div class="cart-body" id="cart-body">
+            <div class="cart-empty" id="cart-empty">
+              <i class="ti ti-shopping-cart" aria-hidden="true"></i>
+              <p class="cart-empty-text">
+                Todavía no agregaste nada.<br>Sumá sabores desde el catálogo →
+              </p>
+            </div>
+          </div>
+
+          <div class="cart-footer">
+            <div class="cart-total">
+              <span class="cart-total-label">Total</span>
+              <span class="cart-total-value" id="cart-total">0 latas</span>
+            </div>
+            <button
+              type="button"
+              class="btn btn--primary btn--lg btn--block"
+              id="btn-enviar"
+              disabled
+            >
+              <i class="ti ti-send" aria-hidden="true"></i>
+              Enviar pedido
+            </button>
+          </div>
+        </aside>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <div class="cart-bar" id="cart-bar">
+    <span class="cart-bar-count" id="cart-bar-count">0 latas</span>
+    <button type="button" class="btn btn--primary" id="btn-enviar-bar" disabled>
+      <i class="ti ti-send" aria-hidden="true"></i>
+      Enviar pedido
+    </button>
+  </div>
+
+  <dialog class="modal" id="modal-confirmar" aria-labelledby="confirmar-titulo">
+    <div class="modal-inner">
+
+      <header class="modal-header">
+        <h2 class="modal-title" id="confirmar-titulo">Revisá tu pedido</h2>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          id="confirmar-cerrar"
+          aria-label="Cerrar"
+          style="height:36px; width:36px; padding:0;"
+        >
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <p style="font-size: var(--text-sm); color: var(--text-secondary); margin-bottom: var(--space-4);">
+          Vas a enviar este pedido a la Fábrica Central. Cuando lo confirmen, te va a aparecer en "Mis pedidos".
+        </p>
+        <ul class="confirm-list" id="confirmar-list"></ul>
+        <p class="confirm-total" id="confirmar-total"></p>
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn btn--ghost" id="confirmar-cancelar">
+          Seguir agregando
+        </button>
+        <button type="button" class="btn btn--primary btn--lg" id="confirmar-enviar">
+          <i class="ti ti-send" aria-hidden="true"></i>
+          Sí, enviar
+        </button>
+      </footer>
+
+    </div>
+  </dialog>
+
+  <div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    hidden
+  >
+    <i class="ti ti-check" aria-hidden="true"></i>
+    <span class="toast-text" id="toast-text">Listo.</span>
+    <button type="button" class="toast-undo" id="toast-undo">Deshacer</button>
+    <button type="button" class="toast-close" id="toast-close" aria-label="Cerrar aviso">
+      <i class="ti ti-x"></i>
+    </button>
+  </div>
+
+  <script src="js/dialogo.js">
+</script>
+  <script src="js/datos.js">
+</script>
+  <script src="js/pestanas.js">
+</script>
+  <script src="js/suc-catalogo.js">
+</script>
+  <script src="js/nav-movil.js">
+</script>
+</body>
+</html>

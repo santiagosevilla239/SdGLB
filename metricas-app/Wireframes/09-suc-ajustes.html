@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ajustes · Suc. Caballito · Los Bambinos</title>
+  <link rel="icon" href="data:,">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <style>    .ajustes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+      gap: var(--space-5);
+      align-items: start;
+    }
+
+    .ajustes-card {
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+    }
+
+    .ajustes-card-titulo {
+      font-size: var(--text-md);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .ajustes-card-texto {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+      line-height: var(--leading-normal);
+    }
+
+    @media (max-width: 600px) {
+      .page-main {
+        padding: var(--space-5) var(--space-4);
+      }
+    }
+</style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">Ir al contenido principal</a>
+
+  <div class="app-shell">
+
+    <header class="topbar">
+      <div class="topbar-brand">
+        <img src="assets/logo.svg" alt="Los Bambinos" class="topbar-logo">
+        <div class="topbar-divider" aria-hidden="true"></div>
+        <span class="topbar-scope">Suc. Caballito</span>
+      </div>
+
+      <div class="topbar-user">
+        <span class="topbar-username">lucía.r</span>
+        <div class="topbar-avatar" aria-hidden="true">L</div>
+      </div>
+    </header>
+
+    <nav class="sidebar" aria-label="Navegación principal">
+
+      <ul class="reset-list sidebar-nav">
+        <li>
+          <a href="04-suc-dashboard.html" class="sidebar-link">
+            <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+            <span>Inicio</span>
+          </a>
+        </li>
+        <li>
+          <a href="05-suc-inventario.html" class="sidebar-link">
+            <i class="ti ti-package" aria-hidden="true"></i>
+            <span>Mi inventario</span>
+          </a>
+        </li>
+        <li>
+          <a href="06-suc-catalogo.html" class="sidebar-link">
+            <i class="ti ti-shopping-cart" aria-hidden="true"></i>
+            <span>Pedir a fábrica</span>
+          </a>
+        </li>
+        <li>
+          <a href="07-suc-pedidos.html" class="sidebar-link">
+            <i class="ti ti-clipboard-list" aria-hidden="true"></i>
+            <span>Mis pedidos</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="09-suc-ajustes.html"
+            class="sidebar-link sidebar-link--active"
+            aria-current="page"
+          >
+            <i class="ti ti-settings" aria-hidden="true"></i>
+            <span>Ajustes</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <a href="00-login.html" class="sidebar-link">
+          <i class="ti ti-logout" aria-hidden="true"></i>
+          <span>Salir</span>
+        </a>
+      </div>
+
+    </nav>
+
+    <main class="page-main" id="main-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Ajustes</h1>
+          <p class="page-subtitle">Tu cuenta</p>
+        </div>
+      </div>
+
+      <div class="ajustes-grid">
+
+        <section class="ajustes-card" aria-labelledby="titulo-clave">
+          <h2 class="ajustes-card-titulo" id="titulo-clave">Cambiar tu contraseña</h2>
+          <p class="ajustes-card-texto">
+            Si la cambiás, la próxima vez que entres tenés que usar la nueva.
+          </p>
+
+          <div class="alert alert--error" id="clave-error" role="alert" hidden>
+            <i class="ti ti-alert-circle" aria-hidden="true"></i>
+            <span id="clave-error-text"></span>
+          </div>
+
+          <form id="form-clave" novalidate>
+            <div class="field-group">
+              <label class="field-label" for="clave-nueva">Contraseña nueva</label>
+              <input class="field-input" type="password" id="clave-nueva"
+                     placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="clave-repetir">Repetila</label>
+              <input class="field-input" type="password" id="clave-repetir"
+                     placeholder="La misma de arriba" autocomplete="new-password">
+            </div>
+
+            <button type="submit" class="btn btn--primary btn--lg btn--block">
+              <i class="ti ti-check" aria-hidden="true"></i>
+              Guardar contraseña
+            </button>
+          </form>
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    hidden
+  >
+    <i class="ti ti-check" aria-hidden="true"></i>
+    <span class="toast-text" id="toast-text">Listo.</span>
+    <button type="button" class="toast-undo" id="toast-undo" hidden>Deshacer</button>
+    <button type="button" class="toast-close" id="toast-close" aria-label="Cerrar aviso">
+      <i class="ti ti-x"></i>
+    </button>
+  </div>
+
+  <script src="js/dialogo.js">
+</script>
+  <script src="js/datos.js">
+</script>
+  <script src="js/ajustes.js">
+</script>
+  <script src="js/nav-movil.js">
+</script>
+</body>
+</html>

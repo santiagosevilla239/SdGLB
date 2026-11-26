@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Inventario · Los Bambinos</title>
+  <link rel="icon" href="data:,">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <style>    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .page-header-acciones {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .inventario-section {
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .col-estado {
+      width: 120px;
+    }
+
+    .col-accion {
+      width: 90px;
+      text-align: right;
+    }
+
+    .inventario-section tbody tr {
+      cursor: pointer;
+    }
+
+    .cell-link {
+      background: none;
+      border: 0;
+      padding: 0;
+      font: inherit;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .cell-desc {
+      display: block;
+      font-size: var(--text-xs);
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .inventario-section tbody tr:hover .cell-link {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .cell-link:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    .modal--wide {
+      max-width: 560px;
+    }
+
+    .modal-title-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .modal-body--scroll {
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .detalle-resumen {
+      display: flex;
+      gap: var(--space-6);
+      padding-bottom: var(--space-4);
+      margin-bottom: var(--space-4);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .resumen-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .resumen-num {
+      font-size: var(--text-xl);
+      font-weight: 500;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+      line-height: var(--leading-tight);
+    }
+
+    .resumen-lbl {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+    }
+
+    .lata-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .lata-item {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+    }
+
+    .lata-id {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .lata-etiqueta {
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .lata-detalle {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+    }
+
+    .lata-pesos {
+      text-align: right;
+    }
+
+    .lata-neto {
+      display: block;
+      font-size: var(--text-md);
+      font-weight: 500;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+      line-height: var(--leading-tight);
+    }
+
+    .lata-precio {
+      display: block;
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+      margin-top: 2px;
+    }
+
+    .lata-meta {
+      display: flex;
+      justify-content: flex-end;
+      min-width: 92px;
+    }
+
+    .pill--consumida {
+      background: var(--bg-surface);
+      color: var(--text-tertiary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .detalle-vacio {
+      text-align: center;
+      padding: var(--space-6) var(--space-4) var(--space-5);
+    }
+
+    .detalle-vacio .ti {
+      font-size: 40px;
+      color: var(--text-tertiary);
+      display: block;
+      margin-bottom: var(--space-3);
+    }
+
+    .detalle-vacio-titulo {
+      font-size: var(--text-base);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .detalle-vacio-texto {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .field-label-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+
+    .field-accion {
+      background: none;
+      border: 0;
+      padding: 0;
+      font: inherit;
+      font-size: var(--text-sm);
+      color: var(--text-primary);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+</style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">Ir al contenido principal</a>
+
+  <div class="app-shell">
+
+    <header class="topbar">
+      <div class="topbar-brand">
+        <img
+          src="assets/logo.svg"
+          alt="Los Bambinos"
+          class="topbar-logo"
+        >
+        <div class="topbar-divider" aria-hidden="true"></div>
+        <span class="topbar-scope">Fábrica Central</span>
+      </div>
+
+      <div class="topbar-user">
+        <span class="topbar-username">nicolás.p</span>
+        <div class="topbar-avatar" aria-hidden="true">N</div>
+      </div>
+    </header>
+
+    <nav class="sidebar" aria-label="Navegación principal">
+
+      <ul class="reset-list sidebar-nav">
+        <li>
+          <a href="01-dashboard.html" class="sidebar-link">
+            <i class="ti ti-layout-dashboard" aria-hidden="true"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="02-inventario.html"
+            class="sidebar-link sidebar-link--active"
+            aria-current="page"
+          >
+            <i class="ti ti-package" aria-hidden="true"></i>
+            <span>Inventario</span>
+          </a>
+        </li>
+        <li>
+          <a href="03-pedidos.html" class="sidebar-link">
+            <i class="ti ti-clipboard-list" aria-hidden="true"></i>
+            <span>Pedidos</span>
+          </a>
+        </li>
+        <li>
+          <a href="08-ajustes.html" class="sidebar-link">
+            <i class="ti ti-settings" aria-hidden="true"></i>
+            <span>Ajustes</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <a href="00-login.html" class="sidebar-link">
+          <i class="ti ti-logout" aria-hidden="true"></i>
+          <span>Salir</span>
+        </a>
+      </div>
+
+    </nav>
+
+    <main class="page-main" id="main-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Inventario</h1>
+          <p class="page-subtitle" id="inventario-subtitulo"></p>
+        </div>
+        <div class="page-header-acciones" id="acciones-sabores">
+          <button type="button" class="btn btn--ghost btn--lg" id="btn-sabor" aria-haspopup="dialog">
+            <i class="ti ti-ice-cream" aria-hidden="true"></i>
+            Cargar sabor
+          </button>
+          <button type="button" class="btn btn--primary btn--lg" id="btn-cargar" aria-haspopup="dialog">
+            <i class="ti ti-circle-plus" aria-hidden="true"></i>
+            Cargar lata
+          </button>
+        </div>
+
+        <div class="page-header-acciones" id="acciones-insumos" hidden>
+          <button type="button" class="btn btn--ghost btn--lg" id="btn-insumo-nuevo" aria-haspopup="dialog">
+            <i class="ti ti-box" aria-hidden="true"></i>
+            Cargar insumo nuevo
+          </button>
+          <button type="button" class="btn btn--primary btn--lg" id="btn-insumo" aria-haspopup="dialog">
+            <i class="ti ti-circle-plus" aria-hidden="true"></i>
+            Cargar stock
+          </button>
+        </div>
+      </div>
+
+      <section class="inventario-section" aria-labelledby="titulo-inventario">
+
+        <div class="section-header">
+          <h2 class="section-title" id="titulo-inventario">Stock actual</h2>
+        </div>
+
+        <div class="tabs" id="tabs-inventario" role="tablist" aria-label="Qué stock estás mirando">
+          <button
+            type="button"
+            class="tab tab--activa"
+            role="tab"
+            id="tab-sabores"
+            data-tab="sabores"
+            aria-selected="true"
+            aria-controls="panel-sabores"
+          >
+            <i class="ti ti-ice-cream" aria-hidden="true"></i>
+            Sabores
+          </button>
+          <button
+            type="button"
+            class="tab"
+            role="tab"
+            id="tab-insumos"
+            data-tab="insumos"
+            aria-selected="false"
+            aria-controls="panel-insumos"
+          >
+            <i class="ti ti-box" aria-hidden="true"></i>
+            Insumos
+          </button>
+        </div>
+
+        <div id="panel-sabores" role="tabpanel" aria-labelledby="tab-sabores">
+          <table class="data-table" aria-label="Stock de sabores en fábrica">
+            <thead>
+              <tr>
+                <th scope="col">Sabor</th>
+                <th scope="col">Latas en stock</th>
+                <th scope="col">Peso promedio por lata</th>
+                <th scope="col">Precio por kilo</th>
+                <th scope="col" class="col-estado">Estado</th>
+                <th scope="col" class="col-accion">
+                  <span class="sr-only">Acción</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="inventario-body"></tbody>
+          </table>
+
+          <div class="cards-list" id="inventario-cards"></div>
+        </div>
+
+        <div id="panel-insumos" role="tabpanel" aria-labelledby="tab-insumos" hidden>
+          <table class="data-table" aria-label="Stock de insumos en fábrica">
+            <thead>
+              <tr>
+                <th scope="col">Insumo</th>
+                <th scope="col">Categoría</th>
+                <th scope="col">En stock</th>
+                <th scope="col">Precio por unidad</th>
+                <th scope="col" class="col-estado">Estado</th>
+                <th scope="col" class="col-accion">
+                  <span class="sr-only">Acción</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="insumos-body"></tbody>
+          </table>
+
+          <div class="cards-list" id="insumos-cards"></div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <dialog class="modal" id="modal-cargar" aria-labelledby="modal-titulo">
+    <div class="modal-inner">
+
+      <header class="modal-header">
+        <h2 class="modal-title" id="modal-titulo">Cargar lata</h2>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          id="modal-cerrar"
+          aria-label="Cerrar"
+          style="height:36px; width:36px; padding:0;"
+        >
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="modal-body">
+
+        <div class="scan-hint">
+          <i class="ti ti-barcode" aria-hidden="true"></i>
+          <div>
+            <p class="scan-hint-titulo">Escaneá la etiqueta con la pistola</p>
+            <p class="scan-hint-texto">
+              Elegí el sabor y disparás: el código se carga solo. Si la etiqueta
+              está borrada, escribilo a mano.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="alert alert--error"
+          id="modal-error"
+          role="alert"
+          aria-live="assertive"
+          hidden
+        >
+          <i class="ti ti-alert-circle" aria-hidden="true"></i>
+          <span id="modal-error-text"></span>
+        </div>
+
+        <form id="form-cargar" novalidate>
+
+          <div class="field-group">
+            <label class="field-label" for="sel-sabor">Sabor</label>
+            <select class="field-input" id="sel-sabor" name="flavorId">
+              <option value="">Elegí un sabor</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="inp-codigo">Código de la lata</label>
+            <input
+              class="field-input"
+              type="text"
+              id="inp-codigo"
+              name="internalCode"
+              autocomplete="off"
+              placeholder="Escaneá o escribí. Ej: LB-CAR-001"
+            >
+            <p class="field-help" id="codigo-ayuda">
+              La balanza imprime códigos largos de números. Si lo dejás vacío, el
+              sistema le pone uno.
+            </p>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label-row">
+              <label class="field-label" for="inp-peso">Peso de la lata (kg)</label>
+              <button type="button" class="field-accion" id="btn-balanza">
+                <i class="ti ti-usb" aria-hidden="true"></i>
+                Leer desde la balanza
+              </button>
+            </div>
+            <input
+              class="field-input"
+              type="number"
+              id="inp-peso"
+              name="grossWeight"
+              min="0.1"
+              step="0.1"
+              placeholder="Ej: 4.2"
+            >
+            <p class="field-help">Usá el punto como separador decimal. Ej: 4.2</p>
+          </div>
+
+        </form>
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn btn--ghost" id="modal-cancelar">
+          Cancelar
+        </button>
+        <button type="submit" form="form-cargar" class="btn btn--primary btn--lg">
+          <i class="ti ti-check" aria-hidden="true"></i>
+          Guardar lata
+        </button>
+      </footer>
+
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="modal-sabor" aria-labelledby="sabor-titulo">
+    <div class="modal-inner">
+
+      <header class="modal-header">
+        <h2 class="modal-title" id="sabor-titulo">Cargar sabor</h2>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          id="sabor-cerrar"
+          aria-label="Cerrar"
+          style="height:36px; width:36px; padding:0;"
+        >
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="modal-body">
+
+        <div
+          class="alert alert--error"
+          id="sabor-error"
+          role="alert"
+          aria-live="assertive"
+          hidden
+        >
+          <i class="ti ti-alert-circle" aria-hidden="true"></i>
+          <span id="sabor-error-text"></span>
+        </div>
+
+        <form id="form-sabor" novalidate>
+
+          <div class="field-group">
+            <label class="field-label" for="inp-sabor-nombre">Nombre del sabor</label>
+            <input
+              class="field-input"
+              type="text"
+              id="inp-sabor-nombre"
+              name="name"
+              autocomplete="off"
+              placeholder="Ej: Crema Rocklet"
+            >
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="inp-sabor-precio">Precio por kilo</label>
+            <input
+              class="field-input"
+              type="number"
+              id="inp-sabor-precio"
+              name="price_per_kilo"
+              min="1"
+              step="1"
+              placeholder="Ej: 1000"
+            >
+            <p class="field-help">Con este precio se calcula lo que sale cada lata.</p>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="inp-sabor-desc">Descripción (opcional)</label>
+            <textarea
+              class="field-input"
+              id="inp-sabor-desc"
+              name="description"
+              rows="3"
+              placeholder="Ej: Crema americana con Rocklets"
+              style="height:auto; padding-top:var(--space-2); padding-bottom:var(--space-2);"
+            ></textarea>
+          </div>
+
+        </form>
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn btn--ghost" id="sabor-cancelar">
+          Cancelar
+        </button>
+        <button type="submit" form="form-sabor" class="btn btn--primary btn--lg">
+          <i class="ti ti-check" aria-hidden="true"></i>
+          Guardar sabor
+        </button>
+      </footer>
+
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="modal-insumo" aria-labelledby="insumo-titulo">
+    <div class="modal-inner">
+
+      <header class="modal-header">
+        <h2 class="modal-title" id="insumo-titulo">Cargar stock de insumo</h2>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          id="insumo-cerrar"
+          aria-label="Cerrar"
+          style="height:36px; width:36px; padding:0;"
+        >
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="modal-body">
+
+        <div class="scan-hint">
+          <i class="ti ti-barcode" aria-hidden="true"></i>
+          <div>
+            <p class="scan-hint-titulo">Escaneá el código del bulto</p>
+            <p class="scan-hint-texto">
+              Disparás la pistola sobre la caja y el insumo se elige solo.
+              Si no tiene código, buscalo en la lista.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="alert alert--error"
+          id="insumo-error"
+          role="alert"
+          aria-live="assertive"
+          hidden
+        >
+          <i class="ti ti-alert-circle" aria-hidden="true"></i>
+          <span id="insumo-error-text"></span>
+        </div>
+
+        <form id="form-insumo" novalidate>
+
+          <div class="field-group">
+            <label class="field-label" for="sel-insumo">Insumo</label>
+            <select class="field-input" id="sel-insumo" name="supplyId">
+              <option value="">Elegí un insumo</option>
+            </select>
+            <p class="field-help" id="insumo-ayuda">
+              Escaneá la caja o elegilo de la lista.
+            </p>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="sel-medida">¿Qué estás cargando?</label>
+            <select class="field-input" id="sel-medida" name="medida">
+              <option value="bulto">Bultos cerrados</option>
+              <option value="unidad">Unidades sueltas</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="inp-cantidad">Cantidad</label>
+            <input
+              class="field-input"
+              type="number"
+              id="inp-cantidad"
+              name="cantidad"
+              min="1"
+              step="1"
+              placeholder="Ej: 3"
+            >
+            <p class="field-help" id="insumo-equivale">
+              Elegí un insumo para ver cuántas unidades entran.
+            </p>
+          </div>
+
+        </form>
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn btn--ghost" id="insumo-cancelar">
+          Cancelar
+        </button>
+        <button type="submit" form="form-insumo" class="btn btn--primary btn--lg">
+          <i class="ti ti-check" aria-hidden="true"></i>
+          Guardar stock
+        </button>
+      </footer>
+
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="modal-insumo-nuevo" aria-labelledby="insumo-nuevo-titulo">
+    <div class="modal-inner">
+
+      <header class="modal-header">
+        <h2 class="modal-title" id="insumo-nuevo-titulo">Cargar insumo nuevo</h2>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          id="insumo-nuevo-cerrar"
+          aria-label="Cerrar"
+          style="height:36px; width:36px; padding:0;"
+        >
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="modal-body">
+
+        <div
+          class="alert alert--error"
+          id="insumo-nuevo-error"
+          role="alert"
+          aria-live="assertive"
+          hidden
+        >
+          <i class="ti ti-alert-circle" aria-hidden="true"></i>
+          <span id="insumo-nuevo-error-text"></span>
+        </div>
+
+        <form id="form-insumo-nuevo" novalidate>
+
+          <div class="field-group">
+            <label class="field-label" for="inp-insumo-nombre">Nombre</label>
+            <input
+              class="field-input"
+              type="text"
+              id="inp-insumo-nombre"
+              autocomplete="off"
+              placeholder="Ej: Cucurucho bañado"
+            >
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="sel-insumo-categoria">Categoría</label>
+            <select class="field-input" id="sel-insumo-categoria"></select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="inp-insumo-unidad">¿Cómo se cuenta?</label>
+            <input
+              class="field-input"
+              type="text"
+              id="inp-insumo-unidad"
+              autocomplete="off"
+              placeholder="Ej: cucurucho, pote, botella, bolsa"
+            >
+            <p class="field-help">Así lo vas a ver en el stock y en los pedidos.</p>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="inp-insumo-bulto">¿Cuántos trae el bulto? (opcional)</label>
+            <input
+              class="field-input"
+              type="number"
+              id="inp-insumo-bulto"
+              min="0"
+              step="1"
+              placeholder="Ej: 100"
+            >
+            <p class="field-help">Si viene suelto, dejalo vacío.</p>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="inp-insumo-precio">Precio por unidad</label>
+            <input
+              class="field-input"
+              type="number"
+              id="inp-insumo-precio"
+              min="1"
+              step="1"
+              placeholder="Ej: 120"
+            >
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="inp-insumo-minimo">Avisame cuando queden menos de</label>
+            <input
+              class="field-input"
+              type="number"
+              id="inp-insumo-minimo"
+              min="1"
+              step="1"
+              placeholder="Ej: 300"
+            >
+            <p class="field-help">Debajo de esa cantidad aparece como limitado.</p>
+          </div>
+
+        </form>
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn btn--ghost" id="insumo-nuevo-cancelar">
+          Cancelar
+        </button>
+        <button type="submit" form="form-insumo-nuevo" class="btn btn--primary btn--lg">
+          <i class="ti ti-check" aria-hidden="true"></i>
+          Guardar insumo
+        </button>
+      </footer>
+
+    </div>
+  </dialog>
+
+  <dialog class="modal modal--wide" id="modal-detalle" aria-labelledby="detalle-titulo">
+    <div class="modal-inner">
+
+      <header class="modal-header">
+        <div class="modal-title-group">
+          <h2 class="modal-title" id="detalle-titulo">Sabor</h2>
+          <span class="pill" id="detalle-estado"></span>
+        </div>
+        <button
+          type="button"
+          class="btn btn--ghost"
+          id="detalle-cerrar"
+          aria-label="Cerrar"
+          style="height:36px; width:36px; padding:0;"
+        >
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="modal-body modal-body--scroll" id="detalle-body"></div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn btn--ghost" id="detalle-cerrar-pie">
+          Cerrar
+        </button>
+        <button type="button" class="btn btn--primary btn--lg" id="detalle-cargar">
+          <i class="ti ti-circle-plus" aria-hidden="true"></i>
+          Cargar lata de este sabor
+        </button>
+      </footer>
+
+    </div>
+  </dialog>
+
+  <div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    hidden
+  >
+    <i class="ti ti-check" aria-hidden="true"></i>
+    <span class="toast-text" id="toast-text">Listo. Lata cargada y guardada.</span>
+    <button type="button" class="toast-undo" id="toast-undo">Deshacer</button>
+    <button type="button" class="toast-close" id="toast-close" aria-label="Cerrar aviso">
+      <i class="ti ti-x"></i>
+    </button>
+  </div>
+
+  <script src="js/dialogo.js">
+</script>
+  <script src="js/datos.js">
+</script>
+  <script src="js/tarjetas.js">
+</script>
+  <script src="js/pestanas.js">
+</script>
+  <script src="js/escaner.js">
+</script>
+  <script src="js/inventario.js">
+</script>
+  <script src="js/insumos-fabrica.js">
+</script>
+  <script src="js/nav-movil.js">
+</script>
+</body>
+</html>
